@@ -2,27 +2,33 @@ const express = require("express");
 const { connectToMongoDB } = require("./connect");
 const app = express();
 const path = require("path");
+const cookieParser = require("cookie-parser");
+const { checkForAuthentication, restrictTo } = require('./middlewares/auth');
 // const router = express.Router();
 
 
 const URL = require('./models/url');
 const staticRoute = require("./routes/staticRouter");
-app.use(express.static(path.join(__dirname, "public")));
-
 const urlRoute = require("./routes/url");
+const userRoute = require("./routes/user");
+
+
+app.use(express.static(path.join(__dirname, "public")));
 
 connectToMongoDB('mongodb://127.0.0.1:27017/short-url')
     .then(() => console.log('MongoDB connected'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended:false })); 
-
+app.use(cookieParser());
+app.use(checkForAuthentication);
 
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
 
 app.use('/', staticRoute);
-app.use("/url", urlRoute);
+app.use("/url", restrictTo(["NORMAL", "ADMIN"]), urlRoute);
+app.use("/user", userRoute);
 
 app.get("/test", async (req,res) => {
     const allUrls = await URL.find({});

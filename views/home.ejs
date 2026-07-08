@@ -11,15 +11,22 @@
 <body>
     <div class="container">
         <h1>URL Shortener</h1>
+        </h2>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2>Welcome <%= user.name %>
+            </h2>
 
-
+            <a href="/user/logout">
+                <button>Logout</button>
+            </a>
+        </div>
         <div>
             <form method="POST" action="/url">
                 <label for="">Enter you original URL</label>
                 <input type="text" name="url" placeholder="https://example.com">
                 <button type="submit">Generate</button>
             </form>
-            <% if (message !="" ) { %>
+            <% if (typeof message !=="undefined" && message !=="" ) { %>
                 <script>
                     alert("<%= message %>");
                 </script>
@@ -35,6 +42,8 @@
                     <table>
                         <thead>
                             <th>S no.</th>
+                            <th>User</th>
+                            <th>Email</th>
                             <th>ShortId</th>
                             <th>Redirect</th>
                             <th>Clicks</th>
@@ -44,6 +53,12 @@
                                 <tr>
                                     <td>
                                         <%= index+1 %>
+                                    </td>
+                                    <td>
+                                        <%= url.createdBy.name %>
+                                    </td>
+                                    <td>
+                                        <%= url.createdBy.email %>
                                     </td>
                                     <td>
                                         <%= url.shortId %>
@@ -63,7 +78,7 @@
                     <h3>no shortIDs generated yet</h3>
                     <%} %>
         </div>
-    </div>    
+    </div>
 </body>
 
 </html>
